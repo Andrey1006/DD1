@@ -1,14 +1,11 @@
 import SwiftUI
 
-@main
-struct PropagationTrackerApp: App {
+struct PropagationTracker: View {
     @StateObject private var store = AppStore()
 
-    var body: some Scene {
-        WindowGroup {
-            ContentView()
-                .environmentObject(store)
-                .tint(AppTheme.primary)
-        }
+    var body: some View {
+        ContentView()
+            .environmentObject(store)
+            .tint(AppTheme.primary)
     }
 }
