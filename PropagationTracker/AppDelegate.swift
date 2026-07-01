@@ -29,8 +29,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         start(viewController: viewController)
         
-        scheduleReviewRequest()
-        
         return true
     }
     
