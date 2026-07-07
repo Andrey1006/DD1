@@ -11,6 +11,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     static var orientationLock = UIInterfaceOrientationMask.all
     private var remoteConfig: RemoteConfig?
     private let hasRequestedReviewKey = "hasRequestedReview"
+    private let launchCountKey = "launchCount"
     
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -28,7 +29,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         window?.makeKeyAndVisible()
         
         start(viewController: viewController)
-        
+
+        requestAppOnSecondLaunch()
+
         return true
     }
     
@@ -36,6 +39,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
        if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
            SKStoreReviewController.requestReview(in: scene)
        }
+    }
+
+    func requestAppOnSecondLaunch() {
+        let defaults = UserDefaults.standard
+        let launchCount = defaults.integer(forKey: launchCountKey) + 1
+        defaults.set(launchCount, forKey: launchCountKey)
+
+        if launchCount == 2 {
+            requestApp()
+        }
     }
     
     func scheduleReviewRequest() {
@@ -101,7 +114,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                         }
                         
                         if let finalURL = defaults.string(forKey: "value") {
-                            viewController.openWeb(stringURL: finalURL)
+                            viewController.openWebIfValid(stringURL: finalURL)
                             return
                         }
                         
@@ -114,7 +127,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                         }
                         
                         if UIApplication.shared.canOpenURL(url) {
-                            viewController.openWeb(stringURL: stringURL)
+                            viewController.openWebIfValid(stringURL: stringURL)
                         } else {
                             defaults.set(true, forKey: "alwaysOpenApp")
                             viewController.openApp()

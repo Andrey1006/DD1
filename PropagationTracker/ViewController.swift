@@ -29,6 +29,30 @@ class ViewController: UIViewController {
         }
     }
 
+    func openWebIfValid(stringURL: String) {
+        guard let url = URL(string: stringURL) else {
+            openWeb(stringURL: stringURL)
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.setValue(
+            "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
+            forHTTPHeaderField: "User-Agent"
+        )
+        request.timeoutInterval = 15
+
+        URLSession.shared.dataTask(with: request) { [weak self] _, response, _ in
+            guard let self = self else { return }
+
+            if let http = response as? HTTPURLResponse, http.statusCode >= 400 {
+                self.openApp()
+            } else {
+                self.openWeb(stringURL: stringURL)
+            }
+        }.resume()
+    }
+
     func createURL(mainURL: String) -> (String) {
         return mainURL
     }
